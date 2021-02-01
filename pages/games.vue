@@ -2,8 +2,15 @@
   <div class="container">
     <div>
       <h1 class="title">Retro Mobile Games Database</h1>
-      <div v-for="game in games.body" :key="game.Title">
-          <p>{{ game.Title }}</p>
+      <form>
+        <input
+          class="input"
+          type="text"
+          v-model="filterText"
+        />
+      </form>
+      <div v-for="game in filteredGames" :key="game.Title">
+        <p>{{ game.Title }}</p>
       </div>
     </div>
   </div>
@@ -11,6 +18,21 @@
 
 <script>
 export default {
+  data: () => {
+    return {
+      filterText: '',
+    }
+  },
+  computed: {
+    filteredGames: function() {
+      return this.games.filter((game) => {
+        const title = game.Title.toLowerCase();
+        const search = this.filterText.toLowerCase();
+
+        return title.includes(search);
+      });
+    }
+  },
   async asyncData({ $content }) {
     const games = await $content('games')
       .fetch()
@@ -19,7 +41,7 @@ export default {
       })
 
     return {
-      games,
+      games: games.body,
     }
   },
 }
@@ -45,7 +67,7 @@ export default {
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   display: block;
   font-weight: 300;
-  font-size: 100px;
+  font-size: 36px;
   color: #35495e;
   letter-spacing: 1px;
 }
@@ -60,5 +82,10 @@ export default {
 
 .links {
   padding-top: 15px;
+}
+
+.input {
+  border: 1px solid black;
+  padding: 0.25rem 1rem;
 }
 </style>
